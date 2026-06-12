@@ -1,0 +1,644 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>BookStore Pro</title>
+
+<style>
+*{
+margin:0;
+padding:0;
+box-sizing:border-box;
+font-family:Arial,sans-serif;
+scroll-behavior:smooth;
+}
+
+body{
+background:#f4f6f9;
+}
+
+header{
+background:linear-gradient(135deg,#1a2a6c,#b21f1f);
+color:white;
+padding:30px;
+text-align:center;
+}
+
+header h1{
+font-size:40px;
+}
+
+nav{
+background:#111;
+display:flex;
+justify-content:center;
+align-items:center;
+gap:25px;
+padding:12px 20px;
+position:sticky;
+top:0;
+z-index:100;
+flex-wrap:nowrap;
+overflow-x:auto;
+}
+
+nav button{
+background:none;
+border:none;
+color:white;
+cursor:pointer;
+font-size:14px;
+font-weight:bold;
+letter-spacing:0.5px;
+white-space:nowrap;
+padding:6px 0;
+transition:0.3s;
+}
+
+nav button:hover{
+color:#ff4d4d;
+}
+
+.container{
+padding:20px;
+}
+
+.section-title{
+margin-bottom:20px;
+font-size:28px;
+text-align:center;
+color:#222;
+}
+
+.grid{
+display:grid;
+grid-template-columns:repeat(auto-fit,minmax(250px,1fr));
+gap:20px;
+}
+
+.card{
+background:white;
+border-radius:10px;
+overflow:hidden;
+box-shadow:0 5px 15px rgba(0,0,0,0.1);
+transition:0.3s;
+}
+
+.card:hover{
+transform:translateY(-5px);
+}
+
+.card img{
+width:100%;
+height:150px;
+object-fit:cover;
+}
+
+.card-body{
+padding:15px;
+}
+
+.card-body h3{
+margin-bottom:10px;
+}
+
+.price{
+color:#e74c3c;
+font-weight:bold;
+margin-bottom:10px;
+}
+
+button{
+width:100%;
+padding:10px;
+border:none;
+border-radius:5px;
+cursor:pointer;
+margin-top:5px;
+font-weight:bold;
+}
+
+.standard{
+background:#3498db;
+color:white;
+}
+
+.premium{
+background:#9b59b6;
+color:white;
+}
+
+.pay{
+background:green;
+color:white;
+}
+
+#trackingSection{
+background:white;
+padding:30px;
+margin-top:40px;
+border-radius:10px;
+box-shadow:0 5px 15px rgba(0,0,0,0.1);
+display:none;
+max-width:700px;
+margin-left:auto;
+margin-right:auto;
+}
+
+#trackingSection input{
+width:100%;
+padding:12px;
+border:1px solid #ccc;
+border-radius:5px;
+margin-top:15px;
+}
+
+#trackingResult{
+margin-top:20px;
+}
+
+.success-box{
+background:#d4edda;
+color:#155724;
+padding:15px;
+border-radius:8px;
+}
+
+.warning-box{
+background:#fff3cd;
+color:#856404;
+padding:15px;
+border-radius:8px;
+}
+
+.popup{
+position:fixed;
+top:0;
+left:0;
+width:100%;
+height:100%;
+background:rgba(0,0,0,0.7);
+display:flex;
+justify-content:center;
+align-items:center;
+z-index:999;
+}
+
+.popup-content{
+background:white;
+padding:30px;
+width:350px;
+border-radius:10px;
+text-align:center;
+animation:pop 0.3s ease;
+}
+
+@keyframes pop{
+from{
+transform:scale(0.7);
+opacity:0;
+}
+
+to{
+transform:scale(1);
+opacity:1;
+}
+}
+
+.popup-content select{
+width:100%;
+padding:10px;
+margin-top:15px;
+}
+
+.popup-buttons{
+display:flex;
+gap:10px;
+margin-top:20px;
+}
+
+.hidden{
+display:none;
+}
+
+footer{
+background:#111;
+color:white;
+text-align:center;
+padding:25px;
+margin-top:40px;
+}
+
+.contact-box{
+margin-top:10px;
+font-size:15px;
+line-height:1.8;
+}
+
+@media(max-width:768px){
+
+nav{
+gap:15px;
+padding:10px;
+justify-content:flex-start;
+}
+
+nav button{
+font-size:12px;
+}
+
+.container{
+padding:12px;
+}
+
+.grid{
+grid-template-columns:1fr;
+}
+
+.card{
+max-width:350px;
+margin:auto;
+}
+
+.card img{
+height:140px;
+}
+
+.popup-content{
+width:90%;
+}
+
+#trackingSection{
+padding:20px;
+}
+
+header h1{
+font-size:26px;
+}
+
+}
+
+.card img{
+height:200px;
+}
+}
+</style>
+</head>
+
+<body>
+
+<header id="home">
+<h1>BookStore Pro</h1>
+<p>Premium Books & Exclusive Products</p>
+</header>
+
+<nav>
+<button onclick="showAll()">All Books</button>
+<button onclick="filterBooks('business')">Business</button>
+<button onclick="filterBooks('coding')">Coding</button>
+<button onclick="filterBooks('security')">Cyber Security</button>
+<button onclick="document.getElementById('premiumSection').scrollIntoView()">Premium Goods</button>
+<button onclick="openTrackingPage()">TRACK YOUR ORDER</button>
+</nav>
+
+<div class="container">
+
+<h2 class="section-title">Books Collection</h2>
+<div id="grid" class="grid"></div>
+
+<div id="premiumSection" style="display:none; margin-top:40px;">
+
+<h2 class="section-title">Hidden Premium Collection</h2>
+
+<div id="premiumGrid" class="grid"></div>
+
+<button
+onclick="closePremium()"
+style="margin-top:20px;background:#111;color:white;max-width:200px;display:block;margin-left:auto;margin-right:auto;"
+>
+Back To Books
+</button>
+
+</div>
+
+<div id="trackingSection">
+<h2>TRACK YOUR ORDER</h2>
+
+<p>
+Enter the last 3 transaction codes.
+</p>
+
+<input
+id="trackingCode"
+type="text"
+placeholder="Example: 123"
+>
+
+<button class="premium" onclick="trackOrder()">
+Track Order
+</button>
+
+<div id="trackingResult"></div>
+</div>
+
+</div>
+
+<div id="locationPopup" class="popup hidden">
+<div class="popup-content">
+
+<h2>Select Delivery Location</h2>
+
+<select id="deliveryLocation">
+<option value="">Choose Location</option>
+<option value="Eldoret">Eldoret</option>
+</select>
+
+<button class="premium" onclick="confirmLocation()">
+Continue
+</button>
+
+</div>
+</div>
+
+<div id="paymentPopup" class="popup hidden">
+<div class="popup-content">
+
+<h2 id="paymentTitle"></h2>
+
+<p style="margin-top:15px;">
+Pay to number:
+</p>
+
+<h3>0727769411</h3>
+
+<div class="popup-buttons">
+
+<button onclick="cancelTransaction()">
+Not Yet Paid
+</button>
+
+<button class="pay" onclick="confirmPayment()">
+Already Paid
+</button>
+
+</div>
+
+</div>
+</div>
+
+<footer>
+<h2>Contact</h2>
+
+<div class="contact-box">
+Phone: 12345<br>
+Email: bookstorepro@gmail.com<br>
+Location: Eldoret, Kenya
+</div>
+
+<p style="margin-top:15px;">
+© 2026 BookStore Pro
+</p>
+</footer>
+
+<script>
+
+const books=[
+{
+id:1,
+title:'Business Mastery',
+genre:'business',
+price:800,
+img:'https://picsum.photos/seed/businessbook/400/600',
+premium:{
+name:'Cocaine',
+price:100,
+img:'https://upload.wikimedia.org/wikipedia/commons/5/5f/Oxalis_stricta_leaf.jpg'
+}
+},
+{
+id:2,
+title:'Modern Coding',
+genre:'coding',
+price:1200,
+img:'https://picsum.photos/seed/codingbook/400/600',
+premium:{
+name:'Cookies',
+price:150,
+img:'https://images.unsplash.com/photo-1499636136210-6f4ee915583e?q=80&w=1000&auto=format&fit=crop'
+}
+},
+{
+id:3,
+title:'Cyber Security Basics',
+genre:'security',
+price:950,
+img:'https://picsum.photos/seed/securitybook/400/600',
+premium:{
+name:'Gummies Pack',
+price:1500,
+img:'https://images.unsplash.com/photo-1582058091505-f87a2e55a40f?q=80&w=1000&auto=format&fit=crop'
+}
+}
+];
+
+let selectedProduct='';
+let selectedPrice=0;
+
+const orderUpdates={
+
+'123':'Your order has been dispatched by the seller.',
+
+'456':'Order has arrived at station Eldoret. Please pick it up by calling 012345.',
+
+'789':'Your package is currently in transit.'
+
+};
+
+function showAll(){
+display(books);
+}
+
+function filterBooks(type){
+const filtered=books.filter(b=>b.genre===type);
+display(filtered);
+}
+
+function display(data){
+const grid=document.getElementById('grid');
+
+grid.innerHTML='';
+
+data.forEach(b=>{
+
+grid.innerHTML+=`
+<div class="card">
+<img src="${b.img}">
+<div class="card-body">
+<h3>${b.title}</h3>
+<p>${b.genre}</p>
+<p class="price">Ksh.${b.price}</p>
+<button class="standard" onclick="viewReviews(${b.id})">View</button>
+<button class="premium" onclick="openPremium(${b.id})">Premium</button>
+</div>
+</div>
+`;
+
+});
+}
+
+function openPremium(bookId){
+
+const selectedBook=books.find(b=>b.id===bookId);
+
+const premiumGrid=document.getElementById('premiumGrid');
+
+premiumGrid.innerHTML=`
+<div class="card" style="max-width:280px;margin:auto;">
+<img src="${selectedBook.premium.img}" style="height:120px;object-fit:cover;">
+<div class="card-body">
+<h3>${selectedBook.premium.name}</h3>
+<p style="font-size:13px;color:#555;">
+Exclusive hidden premium item unlocked from ${selectedBook.title}
+</p>
+<p class="price">Ksh.${selectedBook.premium.price}</p>
+<button class="pay" onclick="startPayment('${selectedBook.premium.name}',${selectedBook.premium.price})">Pay</button>
+</div>
+</div>
+`;
+
+document.getElementById('premiumSection').style.display='block';
+
+document.getElementById('premiumSection').scrollIntoView({behavior:'smooth'});
+}
+
+function closePremium(){
+document.getElementById('premiumSection').style.display='none';
+window.location.href='#home';
+}
+
+function openTrackingPage(){
+
+window.scrollTo({top:0,behavior:'smooth'});
+
+document.getElementById('trackingSection').style.display='block';
+
+document.getElementById('grid').style.display='none';
+
+document.getElementById('premiumSection').style.display='none';
+
+}
+
+function viewReviews(bookId){
+
+const reviews={
+1:[
+'⭐⭐⭐⭐⭐ - James Walker: This book is top notch and very informative.',
+'⭐⭐⭐⭐ - Sarah Johnson: I really loved the business strategies explained here.',
+'⭐⭐⭐⭐⭐ - Daniel Smith: One of the best business books I have read.'
+],
+2:[
+'⭐⭐⭐⭐⭐ - Michael Brown: Excellent coding explanations for beginners.',
+'⭐⭐⭐⭐ - Emma Wilson: Clean examples and easy to follow.',
+'⭐⭐⭐⭐⭐ - Ethan Miller: Amazing coding techniques and practical lessons.'
+],
+3:[
+'⭐⭐⭐⭐⭐ - Olivia Davis: Cyber security concepts are explained perfectly.',
+'⭐⭐⭐⭐ - William Taylor: Very useful and modern security tips.',
+'⭐⭐⭐⭐⭐ - Sophia Anderson: I enjoyed every chapter of this security book.'
+]
+};
+
+const selectedReviews=reviews[bookId];
+
+let reviewHTML='';
+
+selectedReviews.forEach(r=>{
+reviewHTML+=`<p style="margin-top:10px;padding:10px;background:#f4f4f4;border-radius:8px;">${r}</p>`;
+});
+
+const selectedBook=books.find(b=>b.id===bookId);
+
+premiumGrid.innerHTML=`
+<div style="max-width:600px;margin:auto;background:white;padding:25px;border-radius:10px;box-shadow:0 5px 15px rgba(0,0,0,0.1);">
+<h2>${selectedBook.title} Reviews</h2>
+${reviewHTML}
+<button onclick="closePremium()" style="margin-top:20px;background:#111;color:white;">Back</button>
+</div>
+`;
+
+document.getElementById('premiumSection').style.display='block';
+window.scrollTo({top:0,behavior:'smooth'});
+}
+
+function startPayment(product,price){
+selectedProduct=product;
+selectedPrice=price;
+
+document.getElementById('locationPopup').classList.remove('hidden');
+}
+
+function confirmLocation(){
+
+const location=document.getElementById('deliveryLocation').value;
+
+if(location===''){
+alert('Please select delivery location.');
+return;
+}
+
+document.getElementById('locationPopup').classList.add('hidden');
+
+document.getElementById('paymentPopup').classList.remove('hidden');
+
+document.getElementById('paymentTitle').innerText=
+`Pay Ksh.${selectedPrice} for ${selectedProduct}`;
+}
+
+function cancelTransaction(){
+
+document.getElementById('paymentPopup').classList.add('hidden');
+
+alert('You have cancelled the transaction.');
+
+window.location.href='#home';
+}
+function confirmPayment(){
+
+document.getElementById('paymentPopup').classList.add('hidden');
+
+window.location.href='#trackingSection';
+}
+
+function trackOrder(){
+
+const code=document.getElementById('trackingCode').value;
+
+const result=document.getElementById('trackingResult');
+
+if(orderUpdates[code]){
+
+result.innerHTML=`
+<div class="success-box">
+${orderUpdates[code]}
+</div>
+`;
+
+}
+else{
+
+result.innerHTML=`
+<div class="warning-box">
+Wait for admin to update and kindly check the transaction code again.
+</div>
+`;
+
+}
+}
+
+showAll();
+
+</script>
+
+</body>
+</html>
